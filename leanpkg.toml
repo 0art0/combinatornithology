@@ -1,0 +1,8 @@
+[package]
+name = "combinatornithology"
+version = "0.1"
+lean_version = "leanprover-community/lean:3.31.0"
+path = "src"
+
+[dependencies]
+mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "e42af8dae8959e89ed4c53b7b97be816d9460b19"}
