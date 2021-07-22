@@ -5,32 +5,33 @@
   "To Mock a Mockingbird", written by Raymond Smullyan.
 -/
 
-namespace introduction
-  /-
-  A certain enchanted forest in a mystical land far away 
-  is inhabited by talking birds.
-  -/
-
-  -- all birds in the enchanted forest belong to the type `Bird`
-  -- a `Type` can be thought of as being similar to a `Set`
-  constant Bird : Type 
-
-  /-
-  Given any birds `A` and `B`, if the name of bird `B` is called out to `A`, 
-  then `A` responds with the name of another bird.
-  -/
-
-  -- `response A B` is the response of Bird `A` on hearing Bird `B`'s name
-  constant response : Bird → Bird → Bird
-
-  -- better notation for denoting response
-  -- the operator is left-associative
-  -- the `◁` symbol (typed as `\lhd`) resembles an ear/beak
-  infix `◁`:100 := response
-
-end introduction
-
 namespace enchantedforest
+
+  namespace introduction
+    /-
+    A certain enchanted forest in a mystical land far away 
+    is inhabited by talking birds.
+    -/
+
+    -- all birds in the enchanted forest belong to the type `Bird`
+    -- a `Type` can be thought of as being similar to a `Set`
+    constant Bird : Type 
+
+    /-
+    Given any birds `A` and `B`, if the name of bird `B` is called out to `A`, 
+    then `A` responds with the name of another bird.
+    -/
+
+    -- `response A B` is the response of Bird `A` on hearing Bird `B`'s name
+    constant response : Bird → Bird → Bird
+
+    -- better notation for denoting response
+    -- the operator is left-associative
+    -- the `◁` symbol (typed as `\lhd`) resembles an ear/beak
+    infix `◁`:100 := response
+
+  end introduction
+
   open introduction
 
   namespace forestcompositionaxiom
@@ -62,7 +63,7 @@ namespace enchantedforest
 
   -- the definition of agreeable birds
   def agreeable_pair (A B : Bird) := ∃ x, A ◁ x = B ◁ x
-  def is_agreeable (A : Bird) := ∀ B, agreeable_pair A B
+  def is_agreeable (A : Bird) := ∀ β, agreeable_pair A β
 
   section agreeable_theorems
 
@@ -73,7 +74,7 @@ namespace enchantedforest
     theorem agreeable_composition
         {A B C : Bird}
         (composition_hypothesis : C = A ∘ B)
-        (agreeable_hypothesis : is_agreeable C) 
+        (agreeability_hypothesis : is_agreeable C) 
         :
         is_agreeable A :=
     begin
@@ -231,7 +232,7 @@ namespace enchantedforest
     -- then every bird is fond of at least one bird.
     -- This does not rely on the composition axiom.
     theorem agreeable_identity_induces_fondness 
-      (agreeable_hypothesis : is_agreeable I) :
+      (I_agreeable : is_agreeable I) :
       ∀ B, ∃ x, is_fond_of B x :=
     begin
       sorry,
@@ -246,6 +247,32 @@ namespace enchantedforest
       sorry,
     end
   end identitybird_theorems
+
+  namespace lark
+    /-
+      The *lark* `L` is a bird which, on hearing the name of an
+      arbitrary bird `x`, calls out the name of the bird that
+      composes `x` with the mockingbird `M`.
+
+      https://en.wikipedia.org/wiki/Lark
+    -/
+
+    -- the definition of a lark
+    constant L : Bird
+    constant L.call : ∀ (x y : Bird), (L ◁ x) ◁ y = x ◁ (y ◁ y)
+  end lark
+
+  section lark_theorems
+    open lark
+
+    -- DIY: Show that the presence of a just lark
+    -- (with no additional known birds or conditions)
+    -- implies the presence of an egocentric bird.
+    theorem lark_implies_egocentric : ∃ E, is_egocentric E :=
+    begin
+      sorry,
+    end
+  end lark_theorems
 
   namespace bluebird
     /-
@@ -272,6 +299,17 @@ namespace enchantedforest
     begin
       sorry,
     end
+
+    open mockingbird
+
+    -- If a mockingbird and a bluebird are in the forest,
+    -- for every bird `A` in the forest, one can contruct a
+    -- bird `β` using bird calls such that `A` is fond of `β`.
+    theorem all_birds_fond : ∀ A, ∃ β, is_fond_of A β :=
+    begin
+      sorry,
+    end
+
   end bluebird_theorems
 
   namespace starling
@@ -296,14 +334,23 @@ namespace enchantedforest
       Interestingly, the existence of a sagebird can be deduced from the birds
       encountered so far.
     -/
-
+  
     -- adding all the known birds
     open mockingbird
     open kestrel
     open identitybird
+    open lark
     open bluebird
     open starling
 
+    -- a sage bird exists in the forest
+    theorem sagebird_existence_simple :
+      ∃ θ, ∀ x, x ◁ (θ ◁ x) = θ ◁ x :=
+    begin
+      sorry,
+    end 
+
+    -- a sage bird exists in the forest
     theorem sagebird_existence :
       ∃ θ, ∀ x, x ◁ (θ ◁ x) = θ ◁ x :=
     begin
@@ -311,13 +358,32 @@ namespace enchantedforest
     end  
   end summoning_a_sagebird
 
+  namespace vireo
+    /-
+      A *vireo* `V` is a bird that has the property that
+      for arbitrary birds `x`, `y` and `z`, the following holds
+
+      ((V ◁ x) ◁ y) ◁ z = z ◁ (x ◁ y)
+
+      https://en.wikipedia.org/wiki/Vireo
+    -/
+
+    constant V : Bird
+    constant V.call : ∀ (x y z : Bird), V ◁ x ◁ y ◁ z = z ◁ x ◁ y
+  end vireo
+
 end enchantedforest
 
 namespace birderivations
   /-
+    A star~t~ling fact:
 
+    All birds can be derived from just the 
+    kestrel (`K`) and the
+    starling (`S`)!
   -/
 
+  -- the SKI Birds
   inductive SKIBird
     | S
     | K
@@ -330,6 +396,7 @@ namespace birderivations
   noncomputable instance : has_coe_to_fun SKIBird :=
   ⟨λ _, SKIBird → SKIBird, response⟩
 
+  -- the rewrite rules
   def rewrite : SKIBird → SKIBird
     | (S x y z) := ((x z) (y z))
     | (K x y) := x
@@ -337,10 +404,12 @@ namespace birderivations
     | (response A B) := response (rewrite A) (rewrite B)
     | B := B
 
+  -- multiple rewrites
   def rerewrite : ℕ → SKIBird → SKIBird
     | 0 E := E
     | (n+1) E := rewrite (rerewrite n E)
 
+  -- check whether a pattern is contained within another
   def contains : SKIBird → SKIBird → Prop
     | x (response A B) := (contains x A) ∨ (contains x B)
     | x y := (x = y)
@@ -383,10 +452,27 @@ namespace birderivations
 
   instance decidable_free_in (x E : SKIBird) : decidable (free_in x E) := by {exact not.decidable,}
 
+  /-
+    # The algorithm
+
+    Define the `α-eliminate` of an expression `E` to be
+    an expression `F` such that `F α = E`.
+
+    1. The α-eliminate of `α` is `I`.
+    2. If `α` does not occur in `E`, then `K E` is the
+        α-eliminate.
+    3. If `E` is of the form `F α`, then `F` is the
+        α-eliminate of `E`.
+    4. If `E = F G`, and `F'` and `G'` are the corresponding
+      α-eliminates of the expressions, then 
+          `S (F') (G')` is the corresponding α-eliminate.
+  
+  -/
+  
 end birderivations
 
 namespace ornithologic
-  open introduction
+  open enchantedforest.introduction
 
   /-
     It turns out that the birds of this forest are 
@@ -470,7 +556,12 @@ namespace ornithologic
 end ornithologic
 
 namespace avianarithmetic
-  open introduction
+  open enchantedforest.introduction
+  open enchantedforest
+
+  open enchantedforest.kestrel
+  open enchantedforest.identitybird
+  open enchantedforest.vireo
 
   /-
     The natural numbers comprise 
@@ -483,25 +574,29 @@ namespace avianarithmetic
   -/
 
   -- the definition of the zero bird
-  constant Z : Bird
-  constant Z.call : sorry
+  constant O : Bird
+  constant O.call : ∀ x, O ◁ x = x
 
   -- the definition of the successor bird
   constant σ : Bird
-  constant σ.call : sorry
+  constant σ.call : ∀ n, σ ◁ n = ((V ◁ (K ◁ I)) ◁ n)
 
   /-
     One can find birds that are capable of
     adding and multiplying numeral birds.
   -/
+
+  -- the predecessor bird
+  constant P : Bird
+  constant P.call : ∀ n, P ◁ n = n ◁ (K ◁ I)
+
+  -- the zero-tester
+  constant Z : Bird
+  constant Z.call : ∀ n, Z ◁ n = n ◁ (K)
   
   -- the definition of the addition bird
-  constant α : Bird
-  constant α.call : sorry
-
-  -- the definition of the multiplication bird
-  constant μ : Bird
-  constant μ.call : sorry
+  constant A : Bird
+  constant A.call : ∀ n m, A ◁ n ◁ m = Z ◁ n ◁ m ◁ (σ ◁ (A ◁ n ◁ (P ◁ m)))
 
 end avianarithmetic
 
@@ -514,3 +609,11 @@ namespace thegrandquestion
     `F` otherwise?
   -/
 end thegrandquestion
+
+/-
+  # References:
+
+  1. "To Mock a Mockingbird", by Raymond Smullyan (https://en.wikipedia.org/wiki/To_Mock_a_Mockingbird)
+  2. "To Dissect a Mockingbird", by David Keenan (https://dkeenan.com/Lambda/index.htm)
+  3. SKI Combinator calculus (https://en.wikipedia.org/wiki/SKI_combinator_calculus)
+-/
