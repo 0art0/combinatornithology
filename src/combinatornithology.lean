@@ -330,24 +330,58 @@ namespace birderivations
   noncomputable instance : has_coe_to_fun SKIBird :=
   ⟨λ _, SKIBird → SKIBird, response⟩
 
-  def fst : SKIBird → SKIBird
-    | (response A B) := A
-    | B := B
-
-  def snd : SKIBird → SKIBird
-    | (response A B) := B
-    | B := B
-
   def rewrite : SKIBird → SKIBird
     | (S x y z) := ((x z) (y z))
     | (K x y) := x
     | (I x) := x
     | (response A B) := response (rewrite A) (rewrite B)
     | B := B
-  
-  variables u v w x y z : SKIBird
 
-  
+  def rerewrite : ℕ → SKIBird → SKIBird
+    | 0 E := E
+    | (n+1) E := rewrite (rerewrite n E)
+
+  def contains : SKIBird → SKIBird → Prop
+    | x (response A B) := (contains x A) ∨ (contains x B)
+    | x y := (x = y)
+
+  def free_in (x E : SKIBird) : Prop := ¬(contains x E)
+
+  instance decidable_contains (x E : SKIBird) : decidable (contains x E) :=
+  begin 
+    induction E with A B hA hB,
+    {
+      rw contains,
+      exact SKIBird.cases_on x (is_true rfl) (is_false (by apply SKIBird.no_confusion)) (is_false (by apply SKIBird.no_confusion))
+      (λ (x_A x_B : SKIBird), is_false (by apply SKIBird.no_confusion)),
+    },
+    {
+      rw contains,
+      exact SKIBird.cases_on x (is_false (by apply SKIBird.no_confusion)) (is_true rfl) (is_false (by apply SKIBird.no_confusion))
+      (λ (x_A x_B : SKIBird), is_false (by apply SKIBird.no_confusion)),
+    },
+    {
+      rw contains,
+      exact SKIBird.cases_on x (is_false (by apply SKIBird.no_confusion)) (is_false (by apply SKIBird.no_confusion)) (is_true rfl)
+      (λ (x_A x_B : SKIBird), is_false (by apply SKIBird.no_confusion)),
+    },
+    {
+      rw contains,
+      cases hA with hfA htA,
+      {
+        cases hB with hfB htB,
+        exact is_false (not_or hfA hfB),
+        exact is_true (or.inr htB),
+      },
+      {
+        cases hB with hfB htB,
+        exact is_true (or.inl htA),
+        exact is_true (or.inr htB),
+      }
+    }
+  end
+
+  instance decidable_free_in (x E : SKIBird) : decidable (free_in x E) := by {exact not.decidable,}
 
 end birderivations
 
