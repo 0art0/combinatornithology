@@ -1,5 +1,3 @@
--- Happy π-Approximation Day (22/7)!    
-
 /-
   These logic puzzles are mainly inspired by the ones in the book 
   "To Mock a Mockingbird", written by Raymond Smullyan.
@@ -344,13 +342,6 @@ namespace enchantedforest
     open starling
 
     -- a sage bird exists in the forest
-    theorem sagebird_existence_simple :
-      ∃ θ, ∀ x, x ◁ (θ ◁ x) = θ ◁ x :=
-    begin
-      sorry,
-    end 
-
-    -- a sage bird exists in the forest
     theorem sagebird_existence :
       ∃ θ, ∀ x, x ◁ (θ ◁ x) = θ ◁ x :=
     begin
@@ -374,7 +365,6 @@ namespace enchantedforest
 
 end enchantedforest
 
-namespace birderivations
   /-
     A star~t~ling fact:
 
@@ -383,232 +373,12 @@ namespace birderivations
     starling (`S`)!
   -/
 
-  -- the SKI Birds
-  inductive SKIBird
-    | S
-    | K
-    | I
-    | response (A : SKIBird) (B : SKIBird)
-
-  open SKIBird
-
-  -- notation for bird response
-  noncomputable instance : has_coe_to_fun SKIBird :=
-  ⟨λ _, SKIBird → SKIBird, response⟩
-
-  -- the rewrite rules
-  def rewrite : SKIBird → SKIBird
-    | (S x y z) := ((x z) (y z))
-    | (K x y) := x
-    | (I x) := x
-    | (response A B) := response (rewrite A) (rewrite B)
-    | B := B
-
-  -- multiple rewrites
-  def rerewrite : ℕ → SKIBird → SKIBird
-    | 0 E := E
-    | (n+1) E := rewrite (rerewrite n E)
-
-  -- check whether a pattern is contained within another
-  def contains : SKIBird → SKIBird → Prop
-    | x (response A B) := (contains x A) ∨ (contains x B)
-    | x y := (x = y)
-
-  def free_in (x E : SKIBird) : Prop := ¬(contains x E)
-
-  instance decidable_contains (x E : SKIBird) : decidable (contains x E) :=
-  begin 
-    induction E with A B hA hB,
-    {
-      rw contains,
-      exact SKIBird.cases_on x (is_true rfl) (is_false (by apply SKIBird.no_confusion)) (is_false (by apply SKIBird.no_confusion))
-      (λ (x_A x_B : SKIBird), is_false (by apply SKIBird.no_confusion)),
-    },
-    {
-      rw contains,
-      exact SKIBird.cases_on x (is_false (by apply SKIBird.no_confusion)) (is_true rfl) (is_false (by apply SKIBird.no_confusion))
-      (λ (x_A x_B : SKIBird), is_false (by apply SKIBird.no_confusion)),
-    },
-    {
-      rw contains,
-      exact SKIBird.cases_on x (is_false (by apply SKIBird.no_confusion)) (is_false (by apply SKIBird.no_confusion)) (is_true rfl)
-      (λ (x_A x_B : SKIBird), is_false (by apply SKIBird.no_confusion)),
-    },
-    {
-      rw contains,
-      cases hA with hfA htA,
-      {
-        cases hB with hfB htB,
-        exact is_false (not_or hfA hfB),
-        exact is_true (or.inr htB),
-      },
-      {
-        cases hB with hfB htB,
-        exact is_true (or.inl htA),
-        exact is_true (or.inr htB),
-      }
-    }
-  end
-
-  instance decidable_free_in (x E : SKIBird) : decidable (free_in x E) := by {exact not.decidable,}
-
-  /-
-    # The algorithm
-
-    Define the `α-eliminate` of an expression `E` to be
-    an expression `F` such that `F α = E`.
-
-    1. The α-eliminate of `α` is `I`.
-    2. If `α` does not occur in `E`, then `K E` is the
-        α-eliminate.
-    3. If `E` is of the form `F α`, then `F` is the
-        α-eliminate of `E`.
-    4. If `E = F G`, and `F'` and `G'` are the corresponding
-      α-eliminates of the expressions, then 
-          `S (F') (G')` is the corresponding α-eliminate.
-  
-  -/
-  
-end birderivations
-
+-- TO-DO
 namespace ornithologic
-  open enchantedforest.introduction
-
-  /-
-    It turns out that the birds of this forest are 
-    clever enough to reason about propositional logic.
-
-    This means that any truth table can be built using the 
-    responses of birds in the forest.
-  -/
-
-  /-
-    The *truth bird* `T` is one that has the property
-          `((T ◁ x) ◁ y) = x`
-    It is no different from the kestrel.
-
-    The *false bird* is one that has the property
-          `((F ◁ x) ◁ y) = y`
-    It is equivalent to the bird `K ◁ I`, 
-    and is often called the *kite*.
-
-    These choices may seem arbitrary, but 
-    the calls match the structure of an
-    `if .. then .. else` statement,
-    and this is useful to implement logical birds.
-  -/
-
-    -- the definition of the true bird
-    constant T : Bird
-    constant T.call : ∀ (x y : Bird), (T ◁ x) ◁ y = x
-
-    -- the definition of the false bird
-    constant F : Bird
-    constant F.call : ∀ (x y : Bird), (F ◁ x) ◁ y = y
-
-    /-
-      The *negation bird* `N` is one that 
-      responds to the bird `T` with `F` and 
-      to the bird `F` with `T`.
-
-      It corresponds to the logical operation of negation.
-    -/
-
-    -- the definition of the negation bird
-    constant N : Bird
-    constant N.call : sorry
-
-    /-
-      Similarly, the *conjunction bird* `C` corresponds
-      to the logical conjunction operation.
-    -/
-
-    -- the definition of the conjunction bird
-    constant C : Bird
-    constant C.call : sorry
-
-    /-
-      The *disjunction bird* `D` corresponds
-      to the logical operation of disjunction.
-    -/
-
-    -- the definition of the disjunction bird
-    constant D : Bird
-    constant D.call : sorry
-
-    /-
-      The *if-then bird* `ι` corresponds
-      to the logical operation of implication.
-    -/
-
-    -- the definition of the if-then bird
-    constant ι : Bird
-    constant ι.call : sorry
-
-    /-
-      The *if-and-only-if bird*, `E` corresponds
-      to the logical operation of bi-implication.
-    -/
-
-    -- the definition of the if-and-only-if bird
-    constant E : Bird
-    constant E.call : sorry
 end ornithologic
 
 namespace avianarithmetic
-  open enchantedforest.introduction
-  open enchantedforest
-
-  open enchantedforest.kestrel
-  open enchantedforest.identitybird
-  open enchantedforest.vireo
-
-  /-
-    The natural numbers comprise 
-    - the *zero bird* `Z`, which represents the numeral `0`
-    - the successor bird `σ` which responds to the numeral bird
-      `n` with the name of the numeral bird `n+1`.
-
-    The implementations may seem arbitrary, but
-    it turns out they work well in practice.
-  -/
-
-  -- the definition of the zero bird
-  constant O : Bird
-  constant O.call : ∀ x, O ◁ x = x
-
-  -- the definition of the successor bird
-  constant σ : Bird
-  constant σ.call : ∀ n, σ ◁ n = ((V ◁ (K ◁ I)) ◁ n)
-
-  /-
-    One can find birds that are capable of
-    adding and multiplying numeral birds.
-  -/
-
-  -- the predecessor bird
-  constant P : Bird
-  constant P.call : ∀ n, P ◁ n = n ◁ (K ◁ I)
-
-  -- the zero-tester
-  constant Z : Bird
-  constant Z.call : ∀ n, Z ◁ n = n ◁ (K)
-  
-  -- the definition of the addition bird
-  constant A : Bird
-  constant A.call : ∀ n m, A ◁ n ◁ m = Z ◁ n ◁ m ◁ (σ ◁ (A ◁ n ◁ (P ◁ m)))
-
 end avianarithmetic
-
-namespace thegrandquestion
-  /-
-    Is it possible to find an *ideal bird* `A` such that
-    given any two expressions `X₁` and `X₂` that are
-    in terms of `S` and `K`, the response `(A ◁ X₁) ◁ X₂`
-    is `T` if `X₁` and `X₂` describe the same bird, and
-    `F` otherwise?
-  -/
-end thegrandquestion
 
 /-
   # References:
