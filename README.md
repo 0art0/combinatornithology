@@ -12,6 +12,6 @@ The main tactics you will need for this game are:
   - `existi` - used to specify a particular bird required to complete a goal
   - `unfold` - to unfold the definitions
 
-The objective of the game is to fill in the `sorry`s with LEAN proofs of the puzzles.
+The objective of the game is to fill in the `sorry`s with LEAN proofs of the puzzles. If you are stuck, solutions are available [in this file](https://github.com/0Art0/combinatornithology/blob/solutions/src/combinatornithology_solved.lean).
 
 ---
