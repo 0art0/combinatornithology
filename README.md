@@ -10,7 +10,6 @@ The main tactics you will need for this game are:
   - `rw` - used to rewrite equalities
   - `intro` - used to pick an arbitrary bird in the forest
   - `existsi` - used to specify a particular bird required to complete a goal
-  - `unfold` - to unfold the definitions
 
 The objective of the game is to fill in the `sorry`s with LEAN proofs of the puzzles. If you are stuck, solutions are available [in this file](https://github.com/0Art0/combinatornithology/blob/solutions/src/combinatornithology_solved.lean).
 
