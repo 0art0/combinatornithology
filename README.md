@@ -15,4 +15,5 @@ The main tactics you will need for this game are:
 The objective of the game is to fill in the `sorry`s with LEAN proofs of the puzzles. If you are stuck, solutions are available [in this file](https://github.com/0Art0/combinatornithology/blob/solutions/src/combinatornithology_solved.lean).
 
 A description of all the birds and their calls can be found in the `birdcall.md` file.
+
 ---
