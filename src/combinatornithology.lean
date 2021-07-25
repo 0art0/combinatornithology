@@ -60,21 +60,23 @@ namespace enchantedforest
   -/
 
   -- the definition of agreeable birds
-  def agreeable_pair (A B : Bird) := ∃ x, A ◁ x = B ◁ x
-  def is_agreeable (A : Bird) := ∀ β, agreeable_pair A β
+
+  notation [parsing_only] A ` agreeable_with ` B := (∃ x, A ◁ x = B ◁ x)
+  notation [parsing_only] A `is_agreeable` := ∀ β, A agreeable_with β
 
   section agreeable_theorems
+    -- This is the first puzzle of the game
 
     open forestcompositionaxiom -- assume the composition law holds
-
+    
     -- For birds `A` and `B`, if `C = A ∘ B` is agreeable,
     -- then so is `A`. 
     theorem agreeable_composition
         {A B C : Bird}
         (composition_hypothesis : C = A ∘ B)
-        (agreeability_hypothesis : is_agreeable C) 
+        (agreeability_hypothesis : C is_agreeable) 
         :
-        is_agreeable A :=
+        A is_agreeable :=
     begin
       sorry,
     end
@@ -100,20 +102,20 @@ namespace enchantedforest
   -/
 
   -- the definition of fondness
-  def is_fond_of (A B : Bird) := A ◁ B = B
+  notation [parsing_only] A ` is_fond_of ` B := A ◁ B = B
 
   /-
   A bird `E` is called *egocentric* if it is fond of itself.
   -/
 
   -- the definition of egocentricity
-  def is_egocentric (E : Bird) := E ◁ E = E
+  notation [parsing_only] E ` is_egocentric ` := E ◁ E = E
 
   section mockingbird_theorems
     open mockingbird 
 
     -- The mockingbird is agreeable.
-    theorem mockingbird_agreeable : is_agreeable M :=
+    theorem mockingbird_agreeable : M is_agreeable :=
     begin
       sorry,
     end
@@ -122,10 +124,9 @@ namespace enchantedforest
 
     -- If a mockingbird is in the forest and the composition law holds, 
     -- then every bird is fond of at least one bird.
-    theorem mockingbird_induces_fondness : ∀ A, ∃ B, is_fond_of A B :=
+    theorem mockingbird_induces_fondness : ∀ A, ∃ B, A is_fond_of B :=
     begin
       intro A,
-      unfold is_fond_of,
 
       existsi ((A ∘ M) ◁ (A ∘ M)), -- this is similar to the Y-combinator
 
@@ -140,7 +141,7 @@ namespace enchantedforest
 
     -- If the composition law holds and a mockingbird is in the forest,
     -- then there is a bird that is egocentric.
-    theorem exists_egocentric : ∃ E, is_egocentric E :=
+    theorem exists_egocentric : ∃ E, E is_egocentric :=
     begin
       sorry,
     end
@@ -152,7 +153,7 @@ namespace enchantedforest
   -/
 
   -- the definition of hopeless egocentricity
-  def is_hopelessly_egocentric (B : Bird) := ∀ x, B ◁ x = B
+  notation [parsing_only] B ` is_hopelessly_egocentric ` := ∀ x, B ◁ x = B
 
   /-
   More generally, a bird `A` is *fixated* on a bird `B` if
@@ -162,7 +163,7 @@ namespace enchantedforest
   -/
 
   -- the definition of fixatedness
-  def is_fixated_on (A B : Bird) := ∀ x, A ◁ x = B
+  notation [parsing_only] A ` is_fixated_on ` B := ∀ x, A ◁ x = B
 
   namespace kestrel
     /-
@@ -181,8 +182,8 @@ namespace enchantedforest
     open kestrel
 
     -- An egocentric kestrel must be hopelessly egocentric.
-    theorem kestrel_egocentrism (kestrel_egocentric : is_egocentric K) : 
-      (is_hopelessly_egocentric K) :=
+    theorem kestrel_egocentrism (kestrel_egocentric : K is_egocentric) : 
+      (K is_hopelessly_egocentric) :=
     begin
       sorry,
     end
@@ -200,8 +201,8 @@ namespace enchantedforest
     -- then `K` is fond of `x`.
     theorem kestrel_fondness 
       (x : Bird)
-      (fond_Kx : is_fond_of K (K ◁ x)) :
-      is_fond_of K x :=
+      (fond_Kx : K is_fond_of (K ◁ x)) :
+      K is_fond_of x :=
     begin
       sorry,
     end
@@ -230,8 +231,8 @@ namespace enchantedforest
     -- then every bird is fond of at least one bird.
     -- This does not rely on the composition axiom.
     theorem agreeable_identity_induces_fondness 
-      (I_agreeable : is_agreeable I) :
-      ∀ B, ∃ x, is_fond_of B x :=
+      (I_agreeable : I is_agreeable) :
+      ∀ B, ∃ x, B is_fond_of x :=
     begin
       sorry,
     end
@@ -239,8 +240,8 @@ namespace enchantedforest
     -- If every bird is fond of at least one bird, then
     -- the identity bird must be agreeable.
     theorem fondness_induces_agreeable_identity
-      (all_birds_fond : ∀ B, ∃ x, is_fond_of B x) :
-      is_agreeable I :=
+      (all_birds_fond : ∀ B, ∃ x, B is_fond_of x) :
+      I is_agreeable :=
     begin
       sorry,
     end
@@ -266,7 +267,7 @@ namespace enchantedforest
     -- DIY: Show that the presence of a just lark
     -- (with no additional known birds or conditions)
     -- implies the presence of an egocentric bird.
-    theorem lark_implies_egocentric : ∃ E, is_egocentric E :=
+    theorem lark_implies_egocentric : ∃ E, E is_egocentric :=
     begin
       sorry,
     end
@@ -303,7 +304,7 @@ namespace enchantedforest
     -- If a mockingbird and a bluebird are in the forest,
     -- for every bird `A` in the forest, one can contruct a
     -- bird `β` using bird calls such that `A` is fond of `β`.
-    theorem all_birds_fond : ∀ A, ∃ β, is_fond_of A β :=
+    theorem all_birds_fond : ∀ A, ∃ β, A is_fond_of β :=
     begin
       sorry,
     end
@@ -349,6 +350,11 @@ namespace enchantedforest
     end  
   end summoning_a_sagebird
 
+  /-
+    As you leave the forest, you notice a flock of *vireos* flying by.
+    It is clearly a large flock, although the exact number does not
+    seem constant.
+  -/
   namespace vireo
     /-
       A *vireo* `V` is a bird that has the property that
