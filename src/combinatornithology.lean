@@ -68,7 +68,7 @@ namespace enchantedforest
     -- This is the first puzzle of the game
 
     open forestcompositionaxiom -- assume the composition law holds
-    
+
     -- For birds `A` and `B`, if `C = A ∘ B` is agreeable,
     -- then so is `A`. 
     theorem agreeable_composition
@@ -93,7 +93,7 @@ namespace enchantedforest
 
     -- the definition of a mockingbird
     constant M : Bird
-    constant M.call (x : Bird) : M ◁ x = x ◁ x
+    constant M.call : ∀ x, M ◁ x = x ◁ x
   end mockingbird
 
   /-
@@ -349,25 +349,6 @@ namespace enchantedforest
       sorry,
     end  
   end summoning_a_sagebird
-
-  /-
-    As you leave the forest, you notice a flock of *vireos* flying by.
-    It is clearly a large flock, although the exact number does not
-    seem constant.
-  -/
-  namespace vireo
-    /-
-      A *vireo* `V` is a bird that has the property that
-      for arbitrary birds `x`, `y` and `z`, the following holds
-
-      ((V ◁ x) ◁ y) ◁ z = z ◁ (x ◁ y)
-
-      https://en.wikipedia.org/wiki/Vireo
-    -/
-
-    constant V : Bird
-    constant V.call : ∀ (x y z : Bird), V ◁ x ◁ y ◁ z = z ◁ x ◁ y
-  end vireo
 
 end enchantedforest
 
