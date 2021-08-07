@@ -25,76 +25,29 @@ namespace enchantedforest
 
     -- better notation for denoting response
     -- the operator is left-associative
-    -- the `◁` symbol (typed as `\lhd`) resembles an ear/beak
-    infix `◁`:100 := response
+    -- the ` ◁ ` symbol (typed as `\lhd`) resembles an ear/beak
+    infix ` ◁ `:100 := response
 
   end introduction
 
   open introduction
 
-  namespace forestcompositionaxiom
+  namespace identitybird
     /-
-    Given any birds `A`, `B`, `C`, the bird `C` is said to *compose* 
-    `A` with `B` if for every bird `x`, the following condition holds
-                      (C ◁ x) = (A ◁ (B ◁ x))
+      If the name of a bird `x` is called out to the identity bird `I`,
+      it responds with just `x`.
 
-    This part of the forest has the property that for any two birds
-    `A` and `B`, there is a third bird `C` that composes `A` with `B`.
+      This bird is sometimes called the "Ibis", or also (rather rudely) as the
+      "idiot bird".
+
+      https://en.wikipedia.org/wiki/Ibis
     -/
 
-    -- composition of birds, implemented as a function similar to `response`
-    constant compose : Bird → Bird → Bird
-    -- notation for composition
-    infixr `∘` := compose
-    -- the definition of composition
-    axiom composition (A B : Bird) : ∀ {x : Bird}, (A ∘ B) ◁ x = A ◁ (B ◁ x)
-
-  end forestcompositionaxiom
-
-  /-
-  Two birds `A` and `B` form an *agreeable pair* if there is another bird `x`
-  that they agree on, i.e., if their responses on hearing the name `x` are the same.
-  (or in symbols,  (A ◁ x) = (B ◁ x))
-
-  A bird `A` is *agreeable* if it forms an agreeable pair with every other bird `B`.
-  -/
-
-  -- the definition of agreeable birds
-
-  notation [parsing_only] A ` agreeable_with ` B := (∃ x, A ◁ x = B ◁ x)
-  notation [parsing_only] A `is_agreeable` := ∀ β, A agreeable_with β
-
-  section agreeable_theorems
-    -- This is the first puzzle of the game
-
-    open forestcompositionaxiom -- assume the composition law holds
-
-    -- For birds `A` and `B`, if `C = A ∘ B` is agreeable,
-    -- then so is `A`. 
-    theorem agreeable_composition
-        {A B C : Bird}
-        (composition_hypothesis : C = A ∘ B)
-        (agreeability_hypothesis : C is_agreeable) 
-        :
-        A is_agreeable :=
-    begin
-      sorry,
-    end
-
-  end agreeable_theorems
-
-  namespace mockingbird
-    /-
-      A *mockingbird* is a kind of bird whose response to any bird `x`
-      is exactly the response of `x` to itself.
-
-      https://en.wikipedia.org/wiki/Mockingbird
-    -/
-
-    -- the definition of a mockingbird
-    constant M : Bird
-    constant M.call : ∀ x, M ◁ x = x ◁ x
-  end mockingbird
+    -- the definition of the identity bird
+    constant I : Bird
+    constant I.call : ∀ (x : Bird), (I ◁ x) = x
+    
+  end identitybird
 
   /-
   A bird `A` is said to be *fond* of another bird `B` if
@@ -111,41 +64,36 @@ namespace enchantedforest
   -- the definition of egocentricity
   notation [parsing_only] E ` is_egocentric ` := E ◁ E = E
 
-  section mockingbird_theorems
-    open mockingbird 
+  section defending_the_identitybird
+    open identitybird
 
-    -- The mockingbird is agreeable.
-    theorem mockingbird_agreeable : M is_agreeable :=
+    /-
+      Students of Combinatornithology sometimes rudely referred to the
+      identity bird as the "idiot bird", because of its apparent simplicity.
+
+      The theorems in this section show why the identity bird is actually quite
+      intelligent.
+    -/
+
+    -- The identity bird is fond of every bird.
+    theorem identity_fond_of_all : ∀ x : Bird, I is_fond_of x :=
     begin
-      sorry,
+      exact I.call,
     end
 
-    open forestcompositionaxiom
-
-    -- If a mockingbird is in the forest and the composition law holds, 
-    -- then every bird is fond of at least one bird.
-    theorem mockingbird_induces_fondness : ∀ A, ∃ B, A is_fond_of B :=
+    -- The identity bird is egocentric.
+    theorem identity_egocentric : I is_egocentric :=
     begin
-      intro A,
-
-      existsi ((A ∘ M) ◁ (A ∘ M)), -- this is similar to the Y-combinator
-
-      conv
-      begin
-        to_rhs,
-      end,
-      sorry,
+      exact identity_fond_of_all I,
     end
 
-    open forestcompositionaxiom
+    /-
+      The identity bird has an unusually large heart! It is fond of every bird.
 
-    -- If the composition law holds and a mockingbird is in the forest,
-    -- then there is a bird that is egocentric.
-    theorem exists_egocentric : ∃ E, E is_egocentric :=
-    begin
-      sorry,
-    end
-  end mockingbird_theorems
+      It is also egocentric, but it is fond of itself no more than it is of any
+      other bird.
+    -/
+  end defending_the_identitybird
 
   /-
   A bird `B` is called *hopelessly egocentric* if
@@ -176,6 +124,7 @@ namespace enchantedforest
     -- the definition of a kestrel
     constant K : Bird
     constant K.call : ∀ (x y : Bird), (K ◁ x) ◁ y = x
+
   end kestrel
 
   section kestrel_theorems
@@ -208,21 +157,18 @@ namespace enchantedforest
     end
   end kestrel_theorems
 
-  namespace identitybird
-    /-
-      If the name of a bird `x` is called out to the identity bird `I`,
-      it responds with just `x`.
+  /-
+  Two birds `A` and `B` form an *agreeable pair* if there is another bird `x`
+  that they agree on, i.e., if their responses on hearing the name `x` are the same.
+  (or in symbols,  (A ◁ x) = (B ◁ x))
 
-      This bird is sometimes called the "Ibis", or also (rather rudely) as the
-      "idiot bird".
+  A bird `A` is *agreeable* if it forms an agreeable pair with every other bird `B`.
+  -/
 
-      https://en.wikipedia.org/wiki/Ibis
-    -/
+  -- the definition of agreeable birds
 
-    -- the definition of the identity bird
-    constant I : Bird
-    constant I.call : ∀ (x : Bird), (I ◁ x) = x
-  end identitybird
+  notation [parsing_only] A ` is_agreeable_with ` B := (∃ x : Bird, A ◁ x = B ◁ x)
+  notation [parsing_only] A ` is_agreeable` := ∀ β : Bird, A is_agreeable_with β
 
   section identitybird_theorems
     open identitybird
@@ -247,31 +193,73 @@ namespace enchantedforest
     end
   end identitybird_theorems
 
-  namespace lark
+  namespace mockingbird
     /-
-      The *lark* `L` is a bird which, on hearing the name of an
-      arbitrary bird `x`, calls out the name of the bird that
-      composes `x` with the mockingbird `M`.
+      A *mockingbird* is a kind of bird whose response to any bird `x`
+      is exactly the response of `x` to itself.
 
-      https://en.wikipedia.org/wiki/Lark
+      https://en.wikipedia.org/wiki/Mockingbird
     -/
 
-    -- the definition of a lark
-    constant L : Bird
-    constant L.call : ∀ (x y : Bird), (L ◁ x) ◁ y = x ◁ (y ◁ y)
-  end lark
+    -- the definition of a mockingbird
+    constant M : Bird
+    constant M.call : ∀ x, M ◁ x = x ◁ x
 
-  section lark_theorems
-    open lark
+  end mockingbird
 
-    -- DIY: Show that the presence of a just lark
-    -- (with no additional known birds or conditions)
-    -- implies the presence of an egocentric bird.
-    theorem lark_implies_egocentric : ∃ E, E is_egocentric :=
+  namespace forestcompositionaxiom
+    /-
+    Given any birds `A`, `B`, `C`, the bird `C` is said to *compose* 
+    `A` with `B` if for every bird `x`, the following condition holds
+                      (C ◁ x) = (A ◁ (B ◁ x))
+
+    This part of the forest has the property that for any two birds
+    `A` and `B`, there is a third bird `C` that composes `A` with `B`.
+    -/
+
+    -- composition of birds, implemented as a function similar to `response`
+    constant compose : Bird → Bird → Bird
+    -- notation for composition
+    infixr ` ∘ ` := compose
+    -- the definition of composition
+    axiom composition (A B : Bird) : ∀ {x : Bird}, (A ∘ B) ◁ x = A ◁ (B ◁ x)
+
+  end forestcompositionaxiom
+
+  section mockingbird_theorems
+    open mockingbird 
+
+    -- The mockingbird is agreeable.
+    theorem mockingbird_agreeable : M is_agreeable :=
     begin
       sorry,
     end
-  end lark_theorems
+
+    open forestcompositionaxiom
+
+    -- If a mockingbird is in the forest and the composition law holds, 
+    -- then every bird is fond of at least one bird.
+    theorem mockingbird_induces_fondness : ∀ A, ∃ B, A is_fond_of B :=
+    begin
+      intro A,
+
+      existsi ((A ∘ M) ◁ (A ∘ M)), -- this is similar to the Y-combinator
+
+      conv
+      begin
+        to_rhs,
+      end,
+      sorry,
+    end
+
+    -- If the composition law holds and a mockingbird is in the forest,
+    -- then there is a bird that is egocentric.
+    theorem exists_egocentric : ∃ E, E is_egocentric :=
+    begin
+      sorry,
+    end
+
+  end mockingbird_theorems
 
   namespace bluebird
     /-
@@ -286,6 +274,7 @@ namespace enchantedforest
     -- the definition of a bluebird
     constant B : Bird
     constant B.call : ∀ (x y z : Bird), (((B ◁ x) ◁ y) ◁ z) = x ◁ (y ◁ z)
+    
   end bluebird
 
   section bluebird_theorems
@@ -310,6 +299,21 @@ namespace enchantedforest
     end
 
   end bluebird_theorems
+
+  namespace lark
+    /-
+      The *lark* `L` is a bird which, on hearing the name of an
+      arbitrary bird `x`, calls out the name of the bird that
+      composes `x` with the mockingbird `M`.
+
+      https://en.wikipedia.org/wiki/Lark
+    -/
+
+    -- the definition of a lark
+    constant L : Bird
+    constant L.call : ∀ (x y : Bird), (L ◁ x) ◁ y = x ◁ (y ◁ y)
+
+  end lark
 
   namespace starling
     /-
